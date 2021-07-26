@@ -1,0 +1,22 @@
+{
+    "name": "y2kaoz/enc_moodle",
+    "description": "API temporal para el moodle de la ENC.",
+    "type": "project",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Y2KaoZ",
+            "email": "y2kaoz@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.0",
+        "webonyx/graphql-php": "^14.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Domain\\": "src/"
+        }
+    }
+}
