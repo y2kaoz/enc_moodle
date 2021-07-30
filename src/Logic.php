@@ -27,9 +27,13 @@ use Firebase\JWT\JWT;
 class Logic
 {
     private const ALLOWED_ALGS = ['RS256'];
+    private PDO $database;
+    private array $keys;
 
-    public function __construct(private PDO $database, private array $keys)
+    public function __construct(PDO $database, array $keys)
     {
+        $this->database = $database;
+        $this->keys = $keys;
     }
 
     private function validateJwt(string $jwt): object
