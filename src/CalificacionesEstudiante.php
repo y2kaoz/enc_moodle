@@ -33,11 +33,13 @@ class CalificacionesEstudiante
             "name" => "CalificacionesEstudiante",
             "fields" => [
                 "documentoId" => Type::id(),
+                "nombre" => Type::string(),
                 "calificaciones" => Type::listOf(Calificacion::objectType())
             ]
         ]));
     }
     public ?string $documentoId = null;
+    public ?string $nombre = null;
     /** @var Calificacion[] $calificaciones */
     public ?array $calificaciones = null;
 }

@@ -33,15 +33,17 @@ class InscripcionesEstudiante
             "name" => "InscripcionesEstudiante",
             "fields" => [
                 "documentoId" => Type::id(),
+                "nombre" => Type::string(),
                 "retirada" => Type::boolean(),
-                "inscripciones" => Type::listOf(Inscripcion::objectType())
+                "materias" => Type::listOf(Inscripcion::objectType())
             ]
         ]));
     }
     public ?string $documentoId = null;
+    public ?string $nombre = null;
     public ?bool $retirada = null;
     /**
-     * @var Inscripcion[] $inscripciones
+     * @var Inscripcion[] $materias
      */
-    public ?array $inscripciones = null;
+    public ?array $materias = null;
 }

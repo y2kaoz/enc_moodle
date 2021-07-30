@@ -90,7 +90,7 @@ class Logic
         $result = [];
         $ids = $this->getIds($oferta, $plan, $periodo);
         if ($ids !== null) {
-            $query = "SELECT documentoId, Materias.nombre AS materia, 
+            $query = "SELECT documentoId, Personas.nombre as nombre, Materias.nombre AS materia, 
             Calificaciones.calificacion AS calificacion FROM Calificaciones 
             INNER JOIN Personas ON Calificaciones.estudianteId = Personas.id 
             INNER JOIN Materias ON Calificaciones.materiaId = Materias.id 
@@ -109,6 +109,7 @@ class Logic
                     if (!isset($result[$row["documentoId"]])) {
                         $result[$row["documentoId"]] = new CalificacionesEstudiante();
                         $result[$row["documentoId"]]->documentoId = $row["documentoId"];
+                        $result[$row["documentoId"]]->nombre = $row["nombre"];
                         $result[$row["documentoId"]]->calificaciones = [$calificacion];
                     } else {
                         $result[$row["documentoId"]]->calificaciones[] = $calificacion;
@@ -127,7 +128,7 @@ class Logic
         $result = [];
         $ids = $this->getIds($oferta, $plan, $periodo);
         if ($ids !== null) {
-            $query = "SELECT documentoId, Inscripciones.retirado as iRetirada,
+            $query = "SELECT documentoId, Personas.nombre as nombre, Inscripciones.retirado as iRetirada,
             Materias.nombre as materia,MateriasInscritas.retirada as retirada FROM MateriasInscritas
             INNER JOIN Inscripciones ON MateriasInscritas.inscripcionId = Inscripciones.id
             INNER JOIN MateriasEnPlan ON MateriasInscritas.materiasEnPlanId = MateriasEnPlan.id
@@ -139,22 +140,24 @@ class Logic
             if ($stmt->execute([":periodoId" => $ids["periodo"]])) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     assert(is_string($row["documentoId"]));
+                    assert(is_string($row["nombre"]));
                     assert(is_numeric($row["iRetirada"]));
                     assert(is_string($row["materia"]));
                     assert(is_numeric($row["retirada"]));
 
                     $inscripcion = new Inscripcion();
-                    $inscripcion->materia = strval($row["materia"]);
+                    $inscripcion->nombre = strval($row["materia"]);
                     $inscripcion->retirada = intval($row["retirada"]) === 0 ? false : true;
 
                     if (!isset($result[$row["documentoId"]])) {
                         $result[$row["documentoId"]] = new InscripcionesEstudiante();
                         $result[$row["documentoId"]]->documentoId = $row["documentoId"];
+                        $result[$row["documentoId"]]->nombre = $row["nombre"];
                         $result[$row["documentoId"]]->retirada = intval($row["iRetirada"]) === 0 ? false : true;
                         ;
-                        $result[$row["documentoId"]]->inscripciones = [$inscripcion];
+                        $result[$row["documentoId"]]->materias = [$inscripcion];
                     } else {
-                        $result[$row["documentoId"]]->inscripciones[] = $inscripcion;
+                        $result[$row["documentoId"]]->materias[] = $inscripcion;
                     }
                 }
             }
