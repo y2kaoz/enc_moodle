@@ -1,0 +1,13 @@
+#Generate private key
+$ openssl genrsa -des3 -out private.pem 2048
+[YOUR_PASSPHRASE]
+
+#Generate public key from private key
+$ openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+
+<?php
+//Load private key as resource
+$privateKey = openssl_pkey_get_private(file_get_contents('private.pem'), '[YOUR_PASSPHRASE]');
+//Load public key
+$publicKey = file_get_contents('public.pem');
+?>
