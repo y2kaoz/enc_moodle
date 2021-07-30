@@ -32,8 +32,14 @@ class Calificacion
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "Calificacion",
             "fields" => [
-                "materia" => Type::string(),
-                "calificacion" => Type::float()
+                "materia" => [
+                    "type" => Type::string(),
+                    "description" => "Nombre de la materia."
+                ],
+                "calificacion" => [
+                    "type" => Type::float(),
+                    "description" => "Calificacion de la materia."
+                ]
             ]
         ]));
     }

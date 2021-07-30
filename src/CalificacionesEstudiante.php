@@ -31,10 +31,20 @@ class CalificacionesEstudiante
     {
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "CalificacionesEstudiante",
+            "description" => "Calificaciones por estudiate.",
             "fields" => [
-                "documentoId" => Type::id(),
-                "nombre" => Type::string(),
-                "calificaciones" => Type::listOf(Calificacion::objectType())
+                "documentoId" => [
+                    "type" => Type::id(),
+                    "description" => "Documento de identidad del estudiante."
+                ],
+                "nombre" => [
+                    "type" => Type::string(),
+                    "description" => "Nombre del estudiante."
+                ],
+                "calificaciones" => [
+                    "type" => Type::listOf(Calificacion::objectType()),
+                    "description" => "Calificaciones por materia del estudiante."
+                ]
             ]
         ]));
     }

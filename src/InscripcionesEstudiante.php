@@ -31,11 +31,24 @@ class InscripcionesEstudiante
     {
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "InscripcionesEstudiante",
+            "description" => "Inscripciones por estudiate.",
             "fields" => [
-                "documentoId" => Type::id(),
-                "nombre" => Type::string(),
-                "retirada" => Type::boolean(),
-                "materias" => Type::listOf(Inscripcion::objectType())
+                "documentoId" => [
+                    "type" => Type::id(),
+                    "description" => "Documento de identidad del estudiante."
+                ],
+                "nombre" => [
+                    "type" => Type::string(),
+                    "description" => "Nombre del estudiante."
+                ],
+                "retirada" => [
+                    "type" => Type::boolean(),
+                    "description" => "Indica si la inscripcion fue retirada."
+                ],
+                "materias" => [
+                    "type" => Type::listOf(Inscripcion::objectType()),
+                    "description" => "Materias incluidas en la inscripcion."
+                ]
             ]
         ]));
     }

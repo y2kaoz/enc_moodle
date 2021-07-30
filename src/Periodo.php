@@ -22,21 +22,29 @@ declare(strict_types=1);
 namespace Domain;
 
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\EnumType;
 use GraphQL\Type\Definition\Type;
 
 class Periodo
 {
     private static ?ObjectType $objectType = null;
-    public static function objectType(): ObjectType
+    public static function objectType(array $ofertaArg, array $planArg, array $periodoArg): ObjectType
     {
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "Periodo",
+            "description" => "Periodo del plan",
             "fields" => [
-                "oferta" => Type::string(),
-                "plan" => Type::string(),
-                "periodo" => Type::string(),
-                "inicio" => Type::string(),
-                "fin" => Type::string()
+                "oferta" => $ofertaArg,
+                "plan" => $planArg,
+                "periodo" => $periodoArg,
+                "inicio" => [
+                    "type" => Type::string(),
+                    "description" => "Inicio del periodo"
+                ],
+                "fin" => [
+                    "type" => Type::string(),
+                    "description" => "Fin del periodo"
+                ]
             ]
         ]));
     }

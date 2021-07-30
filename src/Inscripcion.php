@@ -32,8 +32,14 @@ class Inscripcion
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "Inscripcion",
             "fields" => [
-                "nombre" => Type::string(),
-                "retirada" => Type::boolean()
+                "nombre" => [
+                    "type" => Type::string(),
+                    "description" => "Nombre de la materia."
+                ],
+                "retirada" => [
+                    "type" => Type::boolean(),
+                    "description" => "Indica si la materia fue retirada."
+                ]
             ]
         ]));
     }

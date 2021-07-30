@@ -22,17 +22,30 @@ declare(strict_types=1);
 namespace Domain;
 
 use PDO;
+use Firebase\JWT\JWT;
 
 class Logic
 {
-    public function __construct(private PDO $database)
+    private const ALLOWED_ALGS = ['RS256'];
+
+    public function __construct(private PDO $database, private array $keys)
     {
     }
 
-    /**
-     * @return array{oferta:int,plan:int,periodo:int}|null
-     */
-    public function getIds(string $oferta, string $plan, string $periodo): ?array
+    private function validateJwt(string $jwt): object
+    {
+        $payload = JWT::decode($jwt, $this->keys, self::ALLOWED_ALGS);
+        if(!isset($payload->iat) || !isset($payload->exp)) {
+            throw new \Exception("JSON fields iat and exp are required in this implementation.");
+        }
+        if($payload->exp - $payload->iat > 600) {
+            throw new \Exception("JSON token has insecure expiration.");
+        }
+        return $payload;
+    }
+
+    /** @return array{oferta:int,plan:int,periodo:int}|null */
+    private function getIds(string $oferta, string $plan, string $periodo): ?array
     {
         $query  = "SELECT Colecciones.id AS coleccionId, ";
         $query .= "Planes.id AS planId, ";
@@ -58,11 +71,12 @@ class Logic
         return $result;
     }
 
-    /**
-     * @return list<Periodo>|null
-     */
-    public function getPeriodos(): ?array
+    /** @return null|list<Periodo>|null */
+    public function getPeriodos(string $jwt): ?array
     {
+        if (!empty($this->keys)) {
+            $this->validateJwt($jwt);
+        }
         $query  = "SELECT Colecciones.nombre AS oferta, ";
         $query .= "Planes.nombre AS plan, ";
         $query .= "Periodos.nombre AS periodo, Periodos.fechaInicio AS inicio, Periodos.fechaFin AS fin ";
@@ -84,9 +98,12 @@ class Logic
         return null;
     }
 
-    /** @return list<CalificacionesEstudiante> */
-    public function getCalificaciones(string $oferta, string $plan, string $periodo): array
+    /** @return null|list<CalificacionesEstudiante> */
+    public function getCalificaciones(string $jwt, string $oferta, string $plan, string $periodo): ?array
     {
+        if (!empty($this->keys)) {
+            $this->validateJwt($jwt);
+        }
         $result = [];
         $ids = $this->getIds($oferta, $plan, $periodo);
         if ($ids !== null) {
@@ -121,10 +138,13 @@ class Logic
     }
 
     /**
-     * @return list<InscripcionesEstudiante>
+     * @return null|list<InscripcionesEstudiante>
      */
-    public function getInscripciones(string $oferta, string $plan, string $periodo): array
+    public function getInscripciones(string $jwt, string $oferta, string $plan, string $periodo): ?array
     {
+        if (!empty($this->keys)) {
+            $this->validateJwt($jwt);
+        }
         $result = [];
         $ids = $this->getIds($oferta, $plan, $periodo);
         if ($ids !== null) {

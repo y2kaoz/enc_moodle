@@ -26,48 +26,79 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use GraphQL\Server\StandardServer;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\EnumType;
 use GraphQL\Type\Schema;
 use GraphQL\Error\DebugFlag;
 
 /** @var \PDO $database */
 $database = include __DIR__ . "/database.php";
+$keys = include __DIR__ . "/keys.php";
+
+$jwtArg = [
+    "type" => Type::nonNull(Type::string()),
+    "description" => "Un JSON Web Token firmado con RS256 (RSA Signature with SHA-256)"
+];
+
+$ofertasType = new EnumType([
+    'name' => 'Ofertas',
+    'description' => 'Ofertas de la ENC.',
+    'values' => $database->query("SELECT nombre FROM Colecciones", \PDO::FETCH_COLUMN, 0)->fetchAll()
+]);
+
+$ofertaArg = [
+    "type" => Type::nonNull($ofertasType),
+    'description' => 'Una de las ofertas de la ENC.'
+];
+
+$planArg = [
+    "type" => Type::nonNull(Type::string()),
+    "description" => "Uno de los planes de la oferta."
+];
+
+$periodoArg = [
+    "type" => Type::nonNull(Type::string()),
+    "description" => "Uno de los periodos del plan."
+];
 
 $server = new StandardServer([
     "schema" => $schema = new Schema([ "query" => new ObjectType([
         "name" => "Query",
         "fields" => [
+            "time" => [
+                "type"=>Type::nonNull(Type::string()),
+                "description"=>"Server timestamp.",
+                "resolve"=>fn()=>time()
+            ],
             "periodos" => [
-                "type" => Type::listOf(Periodo::objectType()),
+                "type" => Type::listOf(Periodo::objectType($ofertaArg, $planArg, $periodoArg)),
+                "description"=>"Los periodos disponibles para consultar calificaciones e inscripciones.",
+                "args" => [ "jwt" => $jwtArg ],
                 "resolve" =>
-                    fn(Logic $logic): ?array => $logic->getPeriodos()
+                /** @param array{jwt:string} $args */
+                fn(Logic $logic, array $args): ?array =>
+                    $logic->getPeriodos($args["jwt"])
             ],
             "calificaciones" => [
                 "type" => Type::listOf(CalificacionesEstudiante::objectType()),
-                "args" => [
-                    "oferta" => Type::nonNull(Type::string()),
-                    "plan" => Type::nonNull(Type::string()),
-                    "periodo" => Type::nonNull(Type::string())
-                ],
+                "description" => "Las calificaciones por estudiante para el periodo consultado.",
+                "args" => [ "jwt" => $jwtArg, "oferta" => $ofertaArg, "plan" => $planArg, "periodo" => $periodoArg ],
                 "resolve" =>
-                /** @param array{oferta:string,plan:string,periodo:string} $args */
+                /** @param array{jwt:string,oferta:string,plan:string,periodo:string} $args */
                 fn(Logic $logic, array $args) =>
-                    $logic->getCalificaciones($args["oferta"], $args["plan"], $args["periodo"])
+                    $logic->getCalificaciones($args["jwt"], $args["oferta"], $args["plan"], $args["periodo"])
             ],
-                "inscripciones" => [
+            "inscripciones" => [
                 "type" => Type::listOf(InscripcionesEstudiante::objectType()),
-                "args" => [
-                    "oferta" => Type::nonNull(Type::string()),
-                    "plan" => Type::nonNull(Type::string()),
-                    "periodo" => Type::nonNull(Type::string())
-                ],
+                "description" => "Las inscripciones por estudiante para el periodo consultado.",
+                "args" => [ "jwt" => $jwtArg, "oferta" => $ofertaArg, "plan" => $planArg, "periodo" => $periodoArg ],
                 "resolve" =>
-                /** @param array{oferta:string,plan:string,periodo:string} $args */
+                /** @param array{jwt:string,oferta:string,plan:string,periodo:string} $args */
                 fn (Logic $logic, array $args) =>
-                    $logic->getInscripciones($args["oferta"], $args["plan"], $args["periodo"])
+                    $logic->getInscripciones($args["jwt"], $args["oferta"], $args["plan"], $args["periodo"])
             ]
         ]
     ]) ]),
-    "rootValue" => new Logic($database),
+    "rootValue" => new Logic($database, $keys),
     "debugFlag" => DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE
 ]);
 
