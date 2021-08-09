@@ -2,16 +2,16 @@
   <head>
     <meta charset="UTF-8">
     <title>Simple GraphiQL Example</title>
-    <link href="/graphiql/graphiql.min.css" rel="stylesheet" />
+    <link href="/moodle/graphiql/graphiql.min.css" rel="stylesheet" />
   </head>
   <body style="margin: 0;">
     <div id="graphiql" style="height: 100vh;"></div>
-    <script src="/graphiql/react.production.min.js"></script>
-    <script src="/graphiql/react-dom.production.min.js"></script>
-    <script src="/graphiql/graphiql.min.js"></script>
+    <script src="/moodle/graphiql/react.production.min.js"></script>
+    <script src="/moodle/graphiql/react-dom.production.min.js"></script>
+    <script src="/moodle/graphiql/graphiql.min.js"></script>
     <script>
       const graphQLFetcher = graphQLParams =>
-        fetch('/graphql.php', {
+        fetch('/moodle/graphql.php', {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(graphQLParams)
