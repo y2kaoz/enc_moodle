@@ -32,6 +32,7 @@ use GraphQL\Error\DebugFlag;
 
 /** @var \PDO $database */
 $database = include __DIR__ . "/database.php";
+/** @var array $keys */
 $keys = include __DIR__ . "/keys.php";
 
 $jwtArg = [
@@ -67,7 +68,7 @@ $server = new StandardServer([
             "time" => [
                 "type" => Type::nonNull(Type::string()),
                 "description" => "Server timestamp.",
-                "resolve" => fn()=>time()
+                "resolve" => fn():int=>time()
             ],
             "periodos" => [
                 "type" => Type::listOf(Periodo::objectType($ofertaArg, $planArg, $periodoArg)),
