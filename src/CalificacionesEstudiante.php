@@ -51,5 +51,5 @@ class CalificacionesEstudiante
     public ?string $documentoId = null;
     public ?string $nombre = null;
     /** @var Calificacion[] $calificaciones */
-    public ?array $calificaciones = null;
+    public ?array $materias = null;
 }
