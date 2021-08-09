@@ -39,10 +39,10 @@ class Logic
     private function validateJwt(string $jwt): object
     {
         $payload = JWT::decode($jwt, $this->keys, self::ALLOWED_ALGS);
-        if(!isset($payload->iat) || !isset($payload->exp)) {
+        if (!isset($payload->iat) || !isset($payload->exp)) {
             throw new \Exception("JSON fields iat and exp are required in this implementation.");
         }
-        if($payload->exp - $payload->iat > 600) {
+        if ($payload->exp - $payload->iat > 600) {
             throw new \Exception("JSON token has insecure expiration.");
         }
         return $payload;
@@ -125,15 +125,15 @@ class Logic
                     assert(is_string($row["materia"]));
                     assert(is_numeric($row["calificacion"]));
                     $calificacion = new Calificacion();
-                    $calificacion->materia = strval($row["materia"]);
+                    $calificacion->nombre = strval($row["materia"]);
                     $calificacion->calificacion = floatval($row["calificacion"]);
                     if (!isset($result[$row["documentoId"]])) {
                         $result[$row["documentoId"]] = new CalificacionesEstudiante();
                         $result[$row["documentoId"]]->documentoId = $row["documentoId"];
                         $result[$row["documentoId"]]->nombre = $row["nombre"];
-                        $result[$row["documentoId"]]->calificaciones = [$calificacion];
+                        $result[$row["documentoId"]]->materias = [$calificacion];
                     } else {
-                        $result[$row["documentoId"]]->calificaciones[] = $calificacion;
+                        $result[$row["documentoId"]]->materias[] = $calificacion;
                     }
                 }
             }

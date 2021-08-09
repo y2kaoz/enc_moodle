@@ -32,7 +32,7 @@ class Calificacion
         return self::$objectType ?: (self::$objectType = new ObjectType([
             "name" => "Calificacion",
             "fields" => [
-                "materia" => [
+                "nombre" => [
                     "type" => Type::string(),
                     "description" => "Nombre de la materia."
                 ],
@@ -43,6 +43,6 @@ class Calificacion
             ]
         ]));
     }
-    public ?string $materia = null;
+    public ?string $nombre = null;
     public ?float $calificacion = null;
 }

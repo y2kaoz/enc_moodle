@@ -65,13 +65,13 @@ $server = new StandardServer([
         "name" => "Query",
         "fields" => [
             "time" => [
-                "type"=>Type::nonNull(Type::string()),
-                "description"=>"Server timestamp.",
-                "resolve"=>fn()=>time()
+                "type" => Type::nonNull(Type::string()),
+                "description" => "Server timestamp.",
+                "resolve" => fn()=>time()
             ],
             "periodos" => [
                 "type" => Type::listOf(Periodo::objectType($ofertaArg, $planArg, $periodoArg)),
-                "description"=>"Los periodos disponibles para consultar calificaciones e inscripciones.",
+                "description" => "Los periodos disponibles para consultar calificaciones e inscripciones.",
                 "args" => [ "jwt" => $jwtArg ],
                 "resolve" =>
                 /** @param array{jwt:string} $args */

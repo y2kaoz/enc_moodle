@@ -41,7 +41,7 @@ class CalificacionesEstudiante
                     "type" => Type::string(),
                     "description" => "Nombre del estudiante."
                 ],
-                "calificaciones" => [
+                "materias" => [
                     "type" => Type::listOf(Calificacion::objectType()),
                     "description" => "Calificaciones por materia del estudiante."
                 ]
