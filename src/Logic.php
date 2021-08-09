@@ -38,10 +38,12 @@ class Logic
 
     private function validateJwt(string $jwt): object
     {
+        /** @var object{iat?:int,exp?:int} $payload */
         $payload = JWT::decode($jwt, $this->keys, self::ALLOWED_ALGS);
         if (!isset($payload->iat) || !isset($payload->exp)) {
             throw new \Exception("JSON fields iat and exp are required in this implementation.");
         }
+        assert(is_integer($payload->exp));
         if ($payload->exp - $payload->iat > 600) {
             throw new \Exception("JSON token has insecure expiration.");
         }
@@ -122,7 +124,7 @@ class Logic
             if ($stmt->execute([":periodoId" => $ids["periodo"]])) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     assert(is_string($row["documentoId"]));
-                    assert(is_string($row["materia"]));
+                    assert(is_string($row["nombre"]));
                     assert(is_numeric($row["calificacion"]));
                     $calificacion = new Calificacion();
                     $calificacion->nombre = strval($row["materia"]);
