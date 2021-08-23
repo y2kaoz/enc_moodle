@@ -61,8 +61,7 @@ $periodoArg = [
     "description" => "Uno de los periodos del plan."
 ];
 
-$server = new StandardServer([
-    "schema" => $schema = new Schema([ "query" => new ObjectType([
+$schema = new Schema([ "query" => new ObjectType([
         "name" => "Query",
         "fields" => [
             "time" => [
@@ -98,9 +97,17 @@ $server = new StandardServer([
                     $logic->getInscripciones($args["jwt"], $args["oferta"], $args["plan"], $args["periodo"])
             ]
         ]
-    ]) ]),
-    "rootValue" => new Logic($database, $keys),
-    "debugFlag" => DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE
+    ]) 
 ]);
 
-$server->handleRequest();
+if(!isset($_GET["PrintSchema"])) {
+    $server = new StandardServer([
+        "schema" => $schema,
+        "rootValue" => new Logic($database, $keys),
+        "debugFlag" => DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE
+    ]);
+    $server->handleRequest();
+} else  {
+    header('Content-Type: text/plain');
+    die(\GraphQL\Utils\SchemaPrinter::doPrint($schema));
+}
